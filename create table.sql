@@ -1,6 +1,24 @@
 USE Hui;
 CREATE SCHEMA proj;
 
+DROP TABLE proj.ReturnOrderInfo
+DROP TABLE proj.OrderDetail 
+DROP TABLE proj.OrderInfo
+DROP TABLE proj.InventoryItem
+DROP TABLE proj.InventoryLocationInfo
+DROP TABLE proj.ProductSerial
+DROP TABLE proj.Batch
+DROP TABLE proj.Product
+DROP TABLE proj.CustomerInfo
+DROP TABLE proj.ManufacturerInfo
+DROP TABLE proj.SupplierInfo
+DROP TABLE proj.CompanyInfo
+DROP TABLE proj.CategoryInfo
+DROP TABLE proj.LocationType
+DROP TABLE proj.AddressInfo
+DROP TABLE proj.ContactInfo
+
+
 -- ContactInfo
 CREATE TABLE proj.ContactInfo (
     ContactID INT PRIMARY KEY,
@@ -117,42 +135,6 @@ CREATE TABLE proj.ProductSerial (
 );
 
 
--- OrderInfo
-CREATE TABLE proj.OrderInfo (
-    OrderID INT PRIMARY KEY,
-    CustomerID INT,
-    TotalPrice DECIMAL(10, 2),
-    Date DATE,
-    FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(CustomerID)
-);
-
-
--- ReturnOrderInfo
-CREATE TABLE proj.ReturnOrderInfo (
-    ReturnOrderID INT PRIMARY KEY,
-    ProductSerialID INT,
-    CustomerID INT,
-    InventoryLocationID INT,
-    ReturnDate DATE,
-    Description VARCHAR(255),
-    FOREIGN KEY (ProductSerialID) REFERENCES proj.ProductSerial(ProductSerialID),
-    FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(customerID)
- );
-
-
--- OrderDetail
-CREATE TABLE proj.OrderDetail (
-    OrderDetailID INT PRIMARY KEY,
-    ProductSerialID INT,
-    EANUPCCodeID INT,
-    OrderID INT,
-    Price DECIMAL(10, 2),
-    FOREIGN KEY (ProductSerialID) REFERENCES proj.ProductSerial(ProductSerialID),
-    FOREIGN KEY (EANUPCCodeID) REFERENCES proj.Product(EANUPCCodeID),
-    FOREIGN KEY (OrderID) REFERENCES proj.OrderInfo(OrderID)
-);
-
-
 
 -- InventoryLocationInfo
 CREATE TABLE proj.InventoryLocationInfo (
@@ -169,7 +151,7 @@ CREATE TABLE proj.InventoryLocationInfo (
 
 -- InventoryItem
 CREATE TABLE proj.InventoryItem (
-    InventoryID INT PRIMARY KEY,
+    InventoryID INT PRIMARY KEY ,
     BatchID INT,
     EANUPCCodeID INT,
     InventoryLocationID INT,
@@ -179,4 +161,41 @@ CREATE TABLE proj.InventoryItem (
     FOREIGN KEY (BatchID) REFERENCES proj.Batch(BatchID),
     FOREIGN KEY (EANUPCCodeID) REFERENCES proj.Product(EANUPCCodeID),
     FOREIGN KEY (InventoryLocationID) REFERENCES proj.InventoryLocationInfo(InventoryLocationID)
+);
+
+
+-- OrderInfo
+CREATE TABLE proj.OrderInfo (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    TotalPrice DECIMAL(10, 2),
+    Date DATE,
+    FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(CustomerID)
+);
+
+
+
+-- OrderDetail
+CREATE TABLE proj.OrderDetail (
+    OrderDetailID INT PRIMARY KEY,
+    ProductSerialID INT,
+    OrderID INT,
+    InventoryID INT,
+    Price DECIMAL(10, 2),
+    FOREIGN KEY (ProductSerialID) REFERENCES proj.ProductSerial(ProductSerialID),
+    FOREIGN KEY (InventoryID) REFERENCES proj.InventoryItem(InventoryID),
+    FOREIGN KEY (OrderID) REFERENCES proj.OrderInfo(OrderID)
+);
+
+-- ReturnOrderInfo
+CREATE TABLE proj.ReturnOrderInfo (
+    ReturnOrderID INT PRIMARY KEY,
+    OrderDetailID INT,
+    CustomerID INT,
+    InventoryID INT,
+    ReturnDate DATE,
+    Description VARCHAR(255),
+    FOREIGN KEY (OrderDetailID) REFERENCES proj.OrderDetail(OrderDetailID),
+    FOREIGN KEY (InventoryID) REFERENCES proj.InventoryItem(InventoryID),
+    FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(CustomerID)
 );
