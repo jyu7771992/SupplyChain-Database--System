@@ -1,8 +1,8 @@
-USE Hui;
+USE SupplyChain;
 
 -- Create DMK
 CREATE MASTER KEY
-ENCRYPTION BY PASSWORD = 'Level_Encryption';
+ENCRYPTION BY PASSWORD = 'Level_Encrypti@n';
 
 -- Create certificate to protect symmetric key
 CREATE CERTIFICATE TestCertificate

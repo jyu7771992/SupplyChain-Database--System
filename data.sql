@@ -1,4 +1,5 @@
-USE Hui;
+
+USE SupplyChain;
 
 --insert data in ContactInfo
 INSERT INTO proj.ContactInfo (ContactID, PhoneNumber, EmailAddress) VALUES

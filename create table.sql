@@ -1,4 +1,4 @@
-USE Hui;
+USE SupplyChain;
 CREATE SCHEMA proj;
 
 DROP TABLE proj.ReturnOrderInfo
