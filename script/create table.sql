@@ -199,3 +199,4 @@ CREATE TABLE proj.ReturnOrderInfo (
     FOREIGN KEY (InventoryID) REFERENCES proj.InventoryItem(InventoryID),
     FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(CustomerID)
 );
+
