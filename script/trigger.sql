@@ -1,3 +1,4 @@
+--------------------------------------  Trigger  ----------------------------------------------------
 --After inserting a new row into the proj.OrderDetail table (adding new order details), the total price of the corresponding order in the proj.OrderInfo table is automatically updated.
 CREATE TRIGGER UpdateOrderTotalPrice
 AFTER INSERT ON proj.OrderDetail
@@ -45,7 +46,34 @@ END;
 
 --HouseKeeping
 DROP TRIGGER proj.UpdateInventoryAfterOrder
-    
+
+--When there is a new ReturnOrderInfo, a new Inventory Item is automatically generated
+CREATE TRIGGER trg_AutoGenerateInventoryOnReturn
+ON proj.ReturnOrderInfo
+AFTER INSERT
+AS
+BEGIN
+    -- Preventing trigger from firing multiple times for a single batch operation
+    SET NOCOUNT ON;
+
+    -- Inserting new record in InventoryItem for each new return order
+    INSERT INTO proj.InventoryItem (BatchID, EANUPCCodeID, InventoryLocationID, Quantity, DateToInventory, Status)
+    SELECT 
+        i.BatchID,
+        i.EANUPCCodeID,
+        i.InventoryLocationID,
+        i.Quantity,
+        inserted.ReturnDate,
+        'Returned'
+    FROM 
+        inserted
+    INNER JOIN proj.InventoryItem i ON inserted.InventoryID = i.InventoryID;
+END;
+
+--Housekeeping
+DROP TRIGGER trg_AutoGenerateInventoryOnReturn;
+
+--------------------------------------  Function  ----------------------------------------------------
 --If the quantity is 0, then a new OrderDetail cannot be generated
 CREATE FUNCTION proj.CheckInventoryQuantity(@InventoryID INT)
 RETURNS BIT
