@@ -79,3 +79,27 @@ BEGIN
     DROP FUNCTION proj.CheckInventoryQuantity;
 END
 
+--Before generating a new row of ReturnOrderInfo, there must be a corresponding OrderDetailID in the OrderDetail table.
+CREATE FUNCTION proj.CheckOrderDetailExists(@OrderDetailID INT)
+RETURNS BIT
+AS
+BEGIN
+    DECLARE @Exists BIT
+
+    IF EXISTS (SELECT 1 FROM proj.OrderDetail WHERE OrderDetailID = @OrderDetailID)
+        SET @Exists = 1
+    ELSE
+        SET @Exists = 0
+
+    RETURN @Exists
+END
+
+ALTER TABLE proj.ReturnOrderInfo
+ADD CONSTRAINT CHK_OrderDetailExists CHECK (proj.CheckOrderDetailExists(OrderDetailID) = 1);
+
+-- Housekeeping
+ALTER TABLE proj.ReturnOrderInfo
+DROP CONSTRAINT CHK_OrderDetailExists;
+
+DROP FUNCTION proj.CheckOrderDetailExists;
+
