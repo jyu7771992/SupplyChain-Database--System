@@ -1,3 +1,4 @@
+--After inserting a new row into the proj.OrderDetail table (adding new order details), the total price of the corresponding order in the proj.OrderInfo table is automatically updated.
 CREATE TRIGGER UpdateOrderTotalPrice
 AFTER INSERT ON proj.OrderDetail
 FOR EACH ROW
