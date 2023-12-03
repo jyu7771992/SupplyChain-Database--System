@@ -132,7 +132,7 @@ DROP CONSTRAINT CHK_OrderDetailExists;
 DROP FUNCTION proj.CheckOrderDetailExists;
 
 -----Tracking from specific material ID to the product in inventory and sale 
-CREATE FUNCTION dbo.GetProductsFromMaterial (@MaterialsID INT)
+CREATE FUNCTION proj.GetProductsFromMaterial (@MaterialsID INT)
 RETURNS TABLE
 AS
 RETURN (
@@ -144,17 +144,17 @@ RETURN (
         II.Status,
         OD.OrderID,
         OD.Price
-    FROM dbo.SupplierInfo SI
-    JOIN dbo.Batch B ON SI.MaterialsID = B.MaterialsID
-    JOIN dbo.ProductSerial PS ON B.BatchID = PS.BatchID
-    JOIN dbo.Product P ON B.EANUPCCodeID = P.EANUPCCodeID
-    LEFT JOIN dbo.InventoryItem II ON P.EANUPCCodeID = II.EANUPCCodeID
-    LEFT JOIN dbo.OrderDetail OD ON II.InventoryID = OD.InventoryID
+    FROM proj.SupplierInfo SI
+    JOIN proj.Batch B ON SI.MaterialsID = B.MaterialsID
+    JOIN proj.ProductSerial PS ON B.BatchID = PS.BatchID
+    JOIN proj.Product P ON B.EANUPCCodeID = P.EANUPCCodeID
+    LEFT JOIN proj.InventoryItem II ON P.EANUPCCodeID = II.EANUPCCodeID
+    LEFT JOIN proj.OrderDetail OD ON II.InventoryID = OD.InventoryID
     WHERE SI.MaterialsID = @MaterialsID
 )
 
-SELECT * FROM dbo.GetProductsFromMaterial(6);
+SELECT * FROM proj.GetProductsFromMaterial(6);
 
 -- Housekeeping
-DROP FUNCTION dbo.GetProductsFromMaterial
+DROP FUNCTION proj.GetProductsFromMaterial
 
