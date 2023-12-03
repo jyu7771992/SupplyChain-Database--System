@@ -1,5 +1,5 @@
 --------------------------------------  Trigger  ----------------------------------------------------
---After inserting a new row into the proj.OrderDetail table (adding new order details), the total price of the corresponding order in the proj.OrderInfo table is automatically updated.
+-----After inserting a new row into the proj.OrderDetail table (adding new order details), the total price of the corresponding order in the proj.OrderInfo table is automatically updated.
 CREATE TRIGGER UpdateOrderTotalPrice
 AFTER INSERT ON proj.OrderDetail
 FOR EACH ROW
@@ -19,7 +19,7 @@ END;
 --HouseKeeping
 DROP TRIGGER UpdateOrderTotalPrice
 
---After inserting a new row into the proj.OrderDetail table (adding new order details),  the Quantity of InventoryID and InventoryLocationUsage in InventoryLocationInfo table are automatically updated.
+-----After inserting a new row into the proj.OrderDetail table (adding new order details),  the Quantity of InventoryID and InventoryLocationUsage in InventoryLocationInfo table are automatically updated.
 CREATE TRIGGER proj.UpdateInventoryAfterOrder
 ON proj.OrderDetail
 AFTER INSERT
@@ -47,7 +47,7 @@ END;
 --HouseKeeping
 DROP TRIGGER proj.UpdateInventoryAfterOrder
 
---When there is a new ReturnOrderInfo, a new Inventory Item is automatically generated
+-----When there is a new ReturnOrderInfo, a new Inventory Item is automatically generated
 CREATE TRIGGER trg_AutoGenerateInventoryOnReturn
 ON proj.ReturnOrderInfo
 AFTER INSERT
@@ -74,7 +74,7 @@ END;
 DROP TRIGGER trg_AutoGenerateInventoryOnReturn;
 
 --------------------------------------  Function  ----------------------------------------------------
---If the quantity is 0, then a new OrderDetail cannot be generated
+-----If the quantity is 0, then a new OrderDetail cannot be generated
 CREATE FUNCTION proj.CheckInventoryQuantity(@InventoryID INT)
 RETURNS BIT
 AS
@@ -107,7 +107,7 @@ BEGIN
     DROP FUNCTION proj.CheckInventoryQuantity;
 END
 
---Before generating a new row of ReturnOrderInfo, there must be a corresponding OrderDetailID in the OrderDetail table.
+-----Before generating a new row of ReturnOrderInfo, there must be a corresponding OrderDetailID in the OrderDetail table.
 CREATE FUNCTION proj.CheckOrderDetailExists(@OrderDetailID INT)
 RETURNS BIT
 AS
@@ -130,4 +130,31 @@ ALTER TABLE proj.ReturnOrderInfo
 DROP CONSTRAINT CHK_OrderDetailExists;
 
 DROP FUNCTION proj.CheckOrderDetailExists;
+
+-----Tracking from specific material ID to the product in inventory and sale 
+CREATE FUNCTION dbo.GetProductsFromMaterial (@MaterialsID INT)
+RETURNS TABLE
+AS
+RETURN (
+    SELECT 
+        P.EANUPCCodeID AS ProductID,
+        P.ProductName,
+        II.InventoryID,
+        II.Quantity,
+        II.Status,
+        OD.OrderID,
+        OD.Price
+    FROM dbo.SupplierInfo SI
+    JOIN dbo.Batch B ON SI.MaterialsID = B.MaterialsID
+    JOIN dbo.ProductSerial PS ON B.BatchID = PS.BatchID
+    JOIN dbo.Product P ON B.EANUPCCodeID = P.EANUPCCodeID
+    LEFT JOIN dbo.InventoryItem II ON P.EANUPCCodeID = II.EANUPCCodeID
+    LEFT JOIN dbo.OrderDetail OD ON II.InventoryID = OD.InventoryID
+    WHERE SI.MaterialsID = @MaterialsID
+)
+
+SELECT * FROM dbo.GetProductsFromMaterial(6);
+
+-- Housekeeping
+DROP FUNCTION dbo.GetProductsFromMaterial
 
