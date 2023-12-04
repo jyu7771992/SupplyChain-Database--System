@@ -201,7 +201,7 @@ INSERT INTO proj.ProductSerial (ProductSerialID, BatchID) VALUES
 -- Sample data for InventoryLocationInfo
 INSERT INTO proj.InventoryLocationInfo (InventoryLocationID, InventoryLocationName, LocationTypeID, AddressID, InventoryLocationUsage, InventoryLocationCapacity)
 VALUES 
-    (1, 'Warehouse A', 1, 15, 1, 1000),
+    (1, 'Warehouse A', 1, 15, 190, 1000),
     (2, 'Storefront B', 2, 12, 2, 500),
     (3, 'Storage C', 1, 13, 1, 800),
     (4, 'Retail Outlet D', 2, 14, 5, 300),
