@@ -19,6 +19,7 @@ DROP TABLE proj.AddressInfo
 DROP TABLE proj.ContactInfo
 
 
+
 -- ContactInfo
 CREATE TABLE proj.ContactInfo (
     ContactID INT PRIMARY KEY,
