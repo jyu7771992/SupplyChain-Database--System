@@ -187,16 +187,19 @@ CREATE TABLE proj.OrderDetail (
     FOREIGN KEY (OrderID) REFERENCES proj.OrderInfo(OrderID)
 );
 
+ALTER TABLE proj.OrderDetail
+ADD CONSTRAINT Unique_ProductSerialID UNIQUE (ProductSerialID);
+
 -- ReturnOrderInfo
 CREATE TABLE proj.ReturnOrderInfo (
     ReturnOrderID INT PRIMARY KEY,
-    OrderDetailID INT,
+    ProductSerialID INT,
     CustomerID INT,
-    InventoryID INT,
+    InventoryLocationID INT,
     ReturnDate DATE,
     Description VARCHAR(255),
-    FOREIGN KEY (OrderDetailID) REFERENCES proj.OrderDetail(OrderDetailID),
-    FOREIGN KEY (InventoryID) REFERENCES proj.InventoryItem(InventoryID),
+    FOREIGN KEY (ProductSerialID) REFERENCES proj.OrderDetail(ProductSerialID),
+    FOREIGN KEY (InventoryLocationID) REFERENCES proj.InventoryLocationInfo(InventoryLocationID),
     FOREIGN KEY (CustomerID) REFERENCES proj.CustomerInfo(CustomerID)
+    
 );
-
