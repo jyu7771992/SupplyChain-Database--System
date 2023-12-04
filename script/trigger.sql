@@ -1,51 +1,163 @@
 --------------------------------------  Trigger  ----------------------------------------------------
------After inserting a new row into the proj.OrderDetail table (adding new order details), the total price of the corresponding order in the proj.OrderInfo table is automatically updated.
-CREATE TRIGGER UpdateOrderTotalPrice
-AFTER INSERT ON proj.OrderDetail
-FOR EACH ROW
-BEGIN
-    -- Calculate total order price from order detail
-    DECLARE newTotal DECIMAL(10, 2);
-    SELECT SUM(Price) INTO newTotal
-    FROM proj.OrderDetail
-    WHERE OrderID = NEW.OrderID;
 
-    -- update the total order price
-    UPDATE proj.OrderInfo
-    SET TotalPrice = newTotal
-    WHERE OrderID = NEW.OrderID;
+--------------------------update orderinfo price by orderdetail
+CREATE TRIGGER UpdateOrderTotalPrice
+ON proj.OrderDetail
+AFTER INSERT, DELETE, UPDATE
+AS
+BEGIN
+    -- Temporarily store the OrderID from the newly inserted row(s)
+    DECLARE @OrderID INT;
+
+    -- Process each newly inserted row
+    DECLARE inserted_cursor CURSOR FOR
+        SELECT OrderID FROM inserted;
+    OPEN inserted_cursor;
+    FETCH NEXT FROM inserted_cursor INTO @OrderID;
+
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Calculate the total order price for this particular order
+        DECLARE @newTotal DECIMAL(10, 2);
+        SELECT @newTotal = SUM(Price)
+        FROM proj.OrderDetail
+        WHERE OrderID = @OrderID;
+
+        -- Update the total order price in OrderInfo for this particular order
+        UPDATE proj.OrderInfo
+        SET TotalPrice = @newTotal
+        WHERE OrderID = @OrderID;
+
+        FETCH NEXT FROM inserted_cursor INTO @OrderID;
+    END;
+
+    CLOSE inserted_cursor;
+    DEALLOCATE inserted_cursor;
 END;
 
---HouseKeeping
-DROP TRIGGER UpdateOrderTotalPrice
 
------After inserting a new row into the proj.OrderDetail table (adding new order details),  the Quantity of InventoryID and InventoryLocationUsage in InventoryLocationInfo table are automatically updated.
-CREATE TRIGGER proj.UpdateInventoryAfterOrder
+
+----------------------update usage of inventory location after modify inventoryItem data
+
+CREATE TRIGGER UpdateInventoryLocationUsageOnItemChange
+ON proj.InventoryItem
+AFTER INSERT, UPDATE, DELETE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- Create a table variable to store the InventoryLocationIDs that have been affected.
+    DECLARE @AffectedLocations TABLE (InventoryLocationID INT);
+
+    -- Insert the affected InventoryLocationIDs from the inserted and deleted tables.
+    INSERT INTO @AffectedLocations (InventoryLocationID)
+    SELECT InventoryLocationID FROM inserted
+    UNION
+    SELECT InventoryLocationID FROM deleted;
+
+    -- Update InventoryLocationUsage for each affected InventoryLocationID.
+    UPDATE InventoryLocationInfo
+    SET InventoryLocationUsage = 
+        (SELECT ISNULL(SUM(ii.Quantity * p.InventoryUsage), 0)
+         FROM InventoryItem ii
+         INNER JOIN Product p ON ii.EANUPCCodeID = p.EANUPCCodeID
+         WHERE ii.InventoryLocationID = InventoryLocationInfo.InventoryLocationID
+         GROUP BY ii.InventoryLocationID)
+    FROM InventoryLocationInfo
+    WHERE InventoryLocationID IN (SELECT InventoryLocationID FROM @AffectedLocations);
+END;
+
+
+
+------------------------update inventory item after order
+CREATE TRIGGER DecreaseInventoryOnOrder
 ON proj.OrderDetail
+AFTER INSERT, DELETE, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON; -- This line is added to prevent extra result sets from interfering with SELECT statements.
+
+    -- Declare a cursor for the inserted table to handle multiple inserts.
+    DECLARE @ProductSerialID INT, @InventoryID INT;
+    
+    -- Cursor for the newly inserted OrderDetail records.
+    DECLARE cur_OrderDetail CURSOR FOR 
+        SELECT ProductSerialID, InventoryID FROM inserted;
+    
+    -- Open the cursor.
+    OPEN cur_OrderDetail;
+    
+    -- Fetch the first row from the cursor.
+    FETCH NEXT FROM cur_OrderDetail INTO @ProductSerialID, @InventoryID;
+    
+    -- Loop through all inserted records.
+    WHILE @@FETCH_STATUS = 0
+    BEGIN
+        -- Decrease the InventoryItem quantity by 1 for the corresponding InventoryID.
+        UPDATE proj.InventoryItem
+        SET Quantity = Quantity - 1
+        WHERE InventoryID = @InventoryID 
+          AND EANUPCCodeID = (SELECT EANUPCCodeID FROM proj.Batch WHERE BatchID = (SELECT BatchID FROM proj.ProductSerial WHERE ProductSerialID = @ProductSerialID));
+
+        -- Fetch the next row from the cursor.
+        FETCH NEXT FROM cur_OrderDetail INTO @ProductSerialID, @InventoryID;
+    END
+    
+    -- Close and deallocate the cursor.
+    CLOSE cur_OrderDetail;
+    DEALLOCATE cur_OrderDetail;
+END;
+
+---------------------update usage of inventory location after return order
+CREATE TRIGGER trg_UpdateInventoryLocationUsageOnReturn
+ON proj.ReturnOrderInfo
 AFTER INSERT
 AS
 BEGIN
-    -- Reduce inventory quantity
-    UPDATE proj.InventoryItem
-    SET Quantity = Quantity - 1
-    FROM proj.InventoryItem
-    INNER JOIN inserted i ON proj.InventoryItem.InventoryID = i.InventoryID;
-
-    -- Update inventory usage
-    UPDATE proj.InventoryLocationInfo
-    SET InventoryLocationUsage = (
-        SELECT II.Quantity * P.InventoryUsage
-        FROM proj.Product P
-        INNER JOIN proj.InventoryItem II ON P.EANUPCCodeID = II.EANUPCCodeID
-        INNER JOIN inserted i ON II.InventoryID = i.InventoryID
-    )
-    FROM proj.InventoryLocationInfo
-    INNER JOIN proj.InventoryItem ON proj.InventoryLocationInfo.InventoryLocationID = proj.InventoryItem.InventoryLocationID
-    INNER JOIN inserted i ON proj.InventoryItem.InventoryID = i.InventoryID;
+    SET NOCOUNT ON;
+    
+    UPDATE ili
+    SET InventoryLocationUsage = InventoryLocationUsage +
+        (SELECT p.InventoryUsage
+         FROM proj.Product p
+         INNER JOIN proj.Batch b ON p.EANUPCCodeID = b.EANUPCCodeID
+         INNER JOIN proj.ProductSerial ps ON b.BatchID = ps.BatchID
+         WHERE ps.ProductSerialID = i.ProductSerialID)
+    FROM proj.InventoryLocationInfo ili
+    INNER JOIN inserted i ON ili.InventoryLocationID = i.InventoryLocationID;
 END;
 
---HouseKeeping
-DROP TRIGGER proj.UpdateInventoryAfterOrder
+
+------------------------update inventoryItem after return order
+CREATE TRIGGER trg_InsertInventoryItemOnReturn
+ON proj.ReturnOrderInfo
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @NewInventoryID INT;
+
+    -- Get the last InventoryID and add 1 to it
+    SELECT @NewInventoryID = ISNULL(MAX(InventoryID), 0) + 1 FROM proj.InventoryItem;
+
+    -- Insert a new record into InventoryItem with the new InventoryID
+    INSERT INTO proj.InventoryItem (InventoryID, BatchID, EANUPCCodeID, InventoryLocationID, Quantity, DateToInventory, Status)
+    SELECT 
+        @NewInventoryID, -- Use the new InventoryID
+        ps.BatchID, 
+        b.EANUPCCodeID, 
+        i.InventoryLocationID, 
+        1 AS Quantity, 
+        i.ReturnDate, 
+        'Returned' AS Status
+    FROM 
+        inserted i
+    INNER JOIN 
+        proj.ProductSerial ps ON i.ProductSerialID = ps.ProductSerialID
+    INNER JOIN 
+        proj.Batch b ON ps.BatchID = b.BatchID;
+END;
 
 -----When there is a new ReturnOrderInfo, a new Inventory Item is automatically generated
 CREATE TRIGGER trg_AutoGenerateInventoryOnReturn
