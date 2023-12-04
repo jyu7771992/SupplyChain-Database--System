@@ -40,16 +40,9 @@ INSERT INTO proj.AddressInfo (AddressID, StreetNumber, UnitNumber, City, State, 
 
 --insert data in LocationType
 INSERT INTO proj.LocationType (LocationTypeID, LocationTypeDescription) VALUES
-(1, 'Warehouse A'),
-(2, 'Storefront B'),
-(3, 'Storage C'),
-(4, 'Retail Outlet D'),
-(5, 'Distribution Center E'),
-(6, 'Mall Store F'),
-(7, 'Backroom G'),
-(8, 'Pop-up Shop H'),
-(9, 'Clearance Center I'),
-(10, 'Showroom J');
+(1, 'Warehouse'),
+(2, 'Store'),
+(3, 'Recycling Center');
 
 
 --insert data in CategoryInfo
@@ -198,73 +191,108 @@ INSERT INTO proj.ProductSerial (ProductSerialID, BatchID) VALUES
 (75, 19),(76, 1),(77, 9),(78, 3),(79, 17),(80, 6),(81, 19),(82, 14),(83, 7),(84, 5),(85, 2),(86, 14),(87, 10),
 (88, 5),(89, 1),(90, 19),(91, 8),(92, 17),(93, 19),(94, 13),(95, 10),(96, 19),(97, 11),(98, 15),(99, 15),(100, 17);
 
--- Sample data for InventoryLocationInfo
-INSERT INTO proj.InventoryLocationInfo (InventoryLocationID, InventoryLocationName, LocationTypeID, AddressID, InventoryLocationUsage, InventoryLocationCapacity)
-VALUES 
-    (1, 'Warehouse A', 1, 15, 1, 1000),
-    (2, 'Storefront B', 2, 12, 2, 500),
-    (3, 'Storage C', 1, 13, 1, 800),
-    (4, 'Retail Outlet D', 2, 14, 5, 300),
-    (5, 'Distribution Center E', 1, 5, 1, 1200),
-    (6, 'Mall Store F', 2, 6, 2, 400),
-    (7, 'Backroom G', 1, 7, 1, 600),
-    (8, 'Pop-up Shop H', 2, 8, 8, 200),
-    (9, 'Clearance Center I', 9, 9, 1, 1000),
-    (10, 'Showroom J', 2, 10, 6, 300);
 
--- Sample data for InventoryItem 
-INSERT INTO proj.InventoryItem (InventoryID, BatchID, EANUPCCodeID, InventoryLocationID, Quantity, DateToInventory, Status)
-VALUES 
-    (1, 1, 4, 1, 19, '2023-01-01', 'In Stock'),
-    (2, 2, 10, 2, 20, '2023-02-15', 'In Stock'),
-    (3, 3, 18, 3, 2, '2023-03-05', 'In Stock'),
-    (4, 4, 19, 4, 1, '2023-04-10', 'In Stock'),
-    (5, 5, 12, 5, 4, '2023-05-20', 'In Stock'),
-    (6, 6, 19, 6, 8, '2023-06-15', 'In Stock'),
-    (7, 7, 7, 9, 35, '2023-07-01', 'In Stock'),
-    (8, 8, 11, 8, 10, '2023-08-12', 'In Stock'),
-    (9, 9, 5, 9, 45, '2023-09-25', 'In Stock'),
-    (10, 10, 18, 10, 18, '2023-10-10', 'In Stock');
-   
--- Sample data for OrderInfo
-INSERT INTO proj.OrderInfo (OrderID, CustomerID, TotalPrice, Date)
-VALUES 
-    (1, 15, 150.00, '2023-03-10'),
-    (2, 3, 80.50, '2023-04-05'),
-    (3, 3, 120.75, '2023-05-15'),
-    (4, 6, 90.20, '2023-06-20'),
-    (5, 7, 200.50, '2023-07-08'),
-    (6, 8, 75.40, '2023-08-25'),
-    (7, 7, 50.00, '2023-09-12'),
-    (8, 9, 180.30, '2023-10-18'),
-    (9, 10, 95.25, '2023-11-05'),
-    (10, 11, 130.80, '2023-12-01');
 
--- Sample data for OrderDetail
-INSERT INTO proj.OrderDetail (OrderDetailID, ProductSerialID, OrderID, InventoryID, Price)
-VALUES 
-    (1, 19, 1, 1, 30.00),
-    (2, 12, 2, 2, 15.50),
-    (3, 33, 3, 3, 20.25),
-    (4, 54, 4, 4, 12.50),
-    (5, 35, 5, 5, 25.10),
-    (6, 26, 6, 6, 10.20),
-    (7, 57, 7, 7, 8.00),
-    (8, 68, 8, 8, 18.75),
-    (9, 19, 9, 9, 14.50),
-    (10, 10, 10, 10, 22.30);
+-- Insert data into InventoryLocationInfo
+
+INSERT INTO proj.InventoryLocationInfo (InventoryLocationID, InventoryLocationName, LocationTypeID, AddressID, InventoryLocationUsage, InventoryLocationCapacity) VALUES
+(1, 'Central Warehouse', 1, 5, 0, 50000),
+(2, 'Main Street Store', 2, 8, 0, 30000),
+(3, 'Suburban Distribution Center', 1, 12, 0, 10000),
+(4, 'Downtown Retail Outlet', 2, 3, 0, 20000),
+(5, 'Northside Storage Facility', 1, 2, 0, 50000),
+(6, 'Eastside Mall Outlet', 2, 4, 0, 50000),
+(7, 'Riverside Showroom', 2, 7, 0, 50000),
+(8, 'Airport Duty-Free Shop', 2, 9, 0, 50000),
+(9, 'University Campus Store', 2, 6, 0, 50000),
+(10, 'City Center Pop-up Store', 2, 11, 0, 20000);
+
+
+-- Insert data into InventoryItem
+INSERT INTO proj.InventoryItem (InventoryID, BatchID, EANUPCCodeID, InventoryLocationID, Quantity, DateToInventory, Status) VALUES
+(1, 1, 4, 1, 10, '2023-11-01', 'In Stock'),
+(2, 2, 10, 1, 20, '2023-11-02', 'In Stock'),
+(3, 3, 18, 2, 15, '2023-11-03', 'In Stock'),
+(4, 4, 19, 2, 5, '2023-11-04', 'In Stock'),
+(5, 5, 12, 3, 25, '2023-11-05', 'In Stock'),
+(6, 6, 19, 3, 30, '2023-11-06', 'In Stock'),
+(7, 7, 7, 4, 20, '2023-11-07', 'In Stock'),
+(8, 8, 11, 4, 10, '2023-11-08', 'In Stock'),
+(9, 9, 5, 5, 15, '2023-11-09', 'In Stock'),
+(10, 10, 18, 5, 10, '2023-11-10', 'In Stock'),
+(11, 11, 2, 6, 8, '2023-11-11', 'In Stock'),
+(12, 12, 10, 6, 12, '2023-11-12', 'In Stock'),
+(13, 13, 2, 7, 14, '2023-11-13', 'In Stock'),
+(14, 14, 16, 7, 16, '2023-11-14', 'In Stock'),
+(15, 15, 1, 8, 18, '2023-11-15', 'In Stock'),
+(16, 16, 18, 8, 20, '2023-11-16', 'In Stock'),
+(17, 17, 5, 9, 22, '2023-11-17', 'In Stock'),
+(18, 18, 15, 9, 24, '2023-11-18', 'In Stock'),
+(19, 19, 18, 10, 26, '2023-11-19', 'In Stock'),
+(20, 20, 11, 10, 28, '2023-11-20', 'In Stock');
+
+-- Insert data into OrderInfo (initial TotalPrice is set to 0 and will be updated by the trigger)
+INSERT INTO proj.OrderInfo (OrderID, CustomerID, TotalPrice, Date) VALUES
+(1, 1, 0, '2023-12-01'),
+(2, 2, 0, '2023-12-02'),
+(3, 3, 0, '2023-12-03'),
+(4, 4, 0, '2023-12-04'),
+(5, 5, 0, '2023-12-05'),
+(6, 6, 0, '2023-12-06'),
+(7, 7, 0, '2023-12-07'),
+(8, 8, 0, '2023-12-08'),
+(9, 9, 0, '2023-12-09'),
+(10, 10, 0, '2023-12-10');
+
+-- Insert data into OrderDetail
+INSERT INTO proj.OrderDetail (OrderDetailID, ProductSerialID, OrderID, InventoryID, Price) VALUES
+(1, 1, 1, 1, 30.00),
+(2, 2, 1, 1, 20.00),
+(3, 3, 2, 2, 25.00),
+(4, 4, 2, 2, 15.00),
+(5, 5, 3, 3, 35.00),
+(6, 6, 3, 3, 20.00),
+(7, 7, 4, 4, 40.00),
+(8, 8, 4, 4, 30.00),
+(9, 9, 5, 5, 25.00),
+(10, 10, 5, 5, 20.00),
+(11, 21, 6, 6, 30.00),
+(12, 12, 6, 6, 25.00),
+(13, 13, 7, 7, 35.00),
+(14, 14, 7, 7, 30.00),
+(15, 15, 8, 8, 40.00),
+(16, 16, 8, 8, 25.00),
+(17, 17, 9, 9, 20.00),
+(18, 18, 9, 9, 15.00),
+(19, 19, 10, 10, 30.00),
+(20, 20, 10, 10, 20.00);
+
+
+-------------------test
+INSERT INTO proj.OrderDetail (OrderDetailID, ProductSerialID, OrderID, InventoryID, Price) VALUES
+(21, 11, 10, 1, 30.00)
+
+SELECT *
+FROM proj.OrderInfo oi 
+SELECT *
+FROM proj.InventoryItem ii 
+WHERE ii.InventoryID = 1
+SELECT *
+FROM proj.InventoryLocationInfo ili 
+WHERE ili.InventoryLocationID = 1
+
 
 -- Sample data for ReturnOrderInfo
-INSERT INTO proj.ReturnOrderInfo (ReturnOrderID, OrderDetailID, CustomerID, InventoryID, ReturnDate, Description)
+INSERT INTO proj.ReturnOrderInfo (ReturnOrderID, ProductSerialID, CustomerID, InventoryLocationID, ReturnDate, Description)
 VALUES 
-    (1, 1, 15, 1, '2023-03-15', 'Defective product'),
-    (2, 2, 12, 2, '2023-04-10', 'Changed mind'),
-    (3, 3, 3, 3, '2023-05-20', 'Wrong size'),
-    (4, 4, 14, 4, '2023-06-25', 'Not as described'),
-    (5, 5, 5, 5, '2023-07-15', 'Customer changed order'),
-    (6, 6, 6, 6, '2023-08-30', 'Product damaged in transit'),
-    (7, 7, 7, 7, '2023-09-18', 'Ordered wrong item'),
-    (8, 8, 8, 8, '2023-10-25', 'Defective item'),
-    (9, 9, 9, 9, '2023-11-10', 'Changed mind'),
-    (10, 10, 10, 10, '2023-12-15', 'Product not needed');
 
+(1,11,10,1,'2023-12-10','not good')
+
+FROM proj.InventoryItem ii 
+WHERE ii.InventoryID = 1
+SELECT *
+FROM proj.InventoryLocationInfo ili 
+WHERE ili.InventoryLocationID = 1
+SELECT *
+FROM proj.InventoryItem ii 
+WHERE ii.InventoryID = 21
