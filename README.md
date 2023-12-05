@@ -14,7 +14,8 @@ Chenchen Jiang jiang.chenc@northeastern.edu
 Inventory Management and Sales Database System   
 (Inventory, Sales, and Quality Control Management System)
 
-# Mission Statement/Mission Goal:
+# Database Purpose: 
+
 To design and implement a comprehensive database system that efficiently manages inventory across various locations, tracks sales, ensures product quality, and facilitates recall procedures. This system aims to streamline operations, optimize stock levels, enhance customer satisfaction, and ensure rapid response to quality control issues.
 
 # Mission Objectives 
@@ -48,10 +49,6 @@ To design and implement a comprehensive database system that efficiently manages
 * Implement advanced search capabilities to retrieve specific data points or generate insights efficiently.
 * Design comprehensive reporting tools to provide detailed insights, summaries, and actionable recommendations based on the data.
 
-# Database Purpose: 
-
-To design and implement a comprehensive database system that efficiently manages inventory across various locations, tracks sales, ensures product quality, and facilitates recall procedures. This system aims to streamline operations, optimize stock levels, enhance customer satisfaction, and ensure rapid response to quality control issues.
-
 ## Business Problems Addressed: 
 
 * Allow businesses to maintain optimal inventory levels by providing real-time stock levels. Automated alerts can notify when stock is low or when it’s time to restock.
@@ -62,23 +59,23 @@ To design and implement a comprehensive database system that efficiently manages
 * The system provides real-time financial insights by integrating sales and inventory data. This facilitates better financial planning, cost control, and improved overall financial management.
 * The system can automate compliance checks and generate reports on sales, inventory turnover, and other key metrics, ensuring that businesses meet regulatory requirements and make informed decisions.
 * The system can track products using unique identifiers (such as serial numbers or batch numbers) and maintain detailed records of sales. In the event of a recall, businesses can swiftly identify affected products, notify customers, and manage the recall process efficiently.
-* The database system can store warranty information for each product sold, including warranty periods and terms. Automated alerts can notify when warranties are about to expire, and the system can streamline the warranty claims process, ensuring timely resolution and customer satisfaction.
+* The database system can govern the product distribution and authorization in different countries and areas, in order to avoid any potential parallel trading. 
 
 ## Business Rules: 
 
 * Each customer may have zero or more orders, and zero or more return orders.
 * Each order will have one or more products.
 * Each product will belong to a certain category.
-* Each product may have one or more suppliers.
-* Each product will have its inventory, store location, batch number, product serial and the suppliers. 
-* Each supplier may have one or more manufacturers. 
-* Each supplier will have its company information.
-* Each manufacturer may have one or more factory locations. 
-* Each factory location will have its address information. 
+* Each product will have its inventory, store location, batch number and product serial number.
+* Each batch may involve one or more suppliers.
+* Each company will have its contact information and address.
+* Each company may have one or more suppliers.
+* Each manufacturer will have multiple product batches.
+* Each manufacturer may have one or more addresses. 
+* Each inventory location will belong to its location type and contains different products.
 
 
 # Entity Relationship Diagram (ERD)
 
 
-![Copy of Supply Chain final ERD - Page 1](https://github.com/jiangchenchen000/SupplyChain-Database-DAMG6210/assets/122926291/66b1ec31-c7aa-433e-aff4-513d992520e9)
-
+![Final Supply Chain ERD](https://github.com/jyu7771992/SupplyChain-Database--System/assets/122926291/77e44192-475c-4b85-b639-bff286093721)
