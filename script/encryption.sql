@@ -1,4 +1,4 @@
-USE SupplyChain;
+USE hui;
 
 -- Create DMK
 CREATE MASTER KEY
