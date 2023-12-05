@@ -191,8 +191,6 @@ INSERT INTO proj.ProductSerial (ProductSerialID, BatchID) VALUES
 (75, 19),(76, 1),(77, 9),(78, 3),(79, 17),(80, 6),(81, 19),(82, 14),(83, 7),(84, 5),(85, 2),(86, 14),(87, 10),
 (88, 5),(89, 1),(90, 19),(91, 8),(92, 17),(93, 19),(94, 13),(95, 10),(96, 19),(97, 11),(98, 15),(99, 15),(100, 17);
 
-
-
 -- Insert data into InventoryLocationInfo
 
 INSERT INTO proj.InventoryLocationInfo (InventoryLocationID, InventoryLocationName, LocationTypeID, AddressID, InventoryLocationUsage, InventoryLocationCapacity) VALUES
