@@ -82,16 +82,8 @@ To design and implement a comprehensive database system that efficiently manages
 
 ![Final Supply Chain ERD](https://github.com/jyu7771992/SupplyChain-Database--System/assets/122926291/77e44192-475c-4b85-b639-bff286093721)
 
-# How to implement our codes
+[!TIP]How to implement our codes
 
-# Step1:
-
-Please create all SQL DDL tables in create table.sql and then insert data from data.sql and then implement test file or encryption file to see the data result.
-
-# Step2:
-
-You can find the data visualization report in the data visualization file, including codes and data result from SQL DDL and python.
-
-# Step3:
-
-Make sure do the housekeeping and drop table to prevent duplicates table in your database.
+[^1]: Please create all SQL DDL tables in create table.sql and then insert data from data.sql and then implement test file or encryption file to see the data result.
+[^2]: You can find the data visualization report in the data visualization file, including codes and data result from SQL DDL and python.
+[^3]: Make sure do the housekeeping and drop table to prevent duplicates table in your database.
